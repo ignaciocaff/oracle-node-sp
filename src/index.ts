@@ -1,45 +1,48 @@
 const oracledb = require('oracledb');
-
 const numRows = 100000;
-export const testDB = async () => {
-  async function run() {
-    let connection;
 
-    try {
-      connection = await oracledb.getConnection();
+export class StoreProcedureDb {
+  public name: string;
+  public parameters: any[];
 
-      const result = await connection.execute(
-        `BEGIN
-         PR_OBTENER_ESTADOS(:id, :cursor);
-         END;`,
-        {
-          id: 1,
-          cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT },
-        },
-      );
+  public constructor(name: string, parameters?: any[]) {
+    this.name = name;
+    this.parameters = parameters;
+  }
 
-      const resultSet = result.outBinds.cursor;
-      let rows;
-      do {
+  public executeSp = async () => {
+    async function run() {
+      let connection;
+
+      try {
+        connection = await oracledb.getConnection();
+        const result = await connection.execute(
+          `BEGIN
+               ${this.name}(:id, :cursor);
+               END;`,
+          {
+            id: this.parameters[0],
+            cursor: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT },
+          },
+        );
+
+        const resultSet = result.outBinds.cursor;
+        console.log(result.outBinds);
+        let rows;
         rows = await resultSet.getRows(numRows);
-        if (rows.length > 0) {
-          // console.log("getRows(): Got " + rows.length + " rows");
-          // console.log(rows);
-        }
-      } while (rows.length === numRows);
-      await resultSet.close();
-    } catch (err) {
-      // console.error(err);
-    } finally {
-      if (connection) {
-        try {
-          await connection.close();
-        } catch (err) {
-          // console.error(err);
+        await resultSet.close();
+        console.log(rows);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (connection) {
+          try {
+            await connection.close();
+          } catch (err) {
+            console.error(err);
+          }
         }
       }
     }
-  }
-
-  run();
-};
+  };
+}
