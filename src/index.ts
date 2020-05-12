@@ -18,7 +18,7 @@ export class StoreProcedureDb {
       connection = await oracledb.getConnection();
       let stringParams: string = '';
       let valueParams: any[] = [];
-      let size = this.parameters.length || 0;
+      let size = this.parameters ? this.parameters.length || 0 : 0;
       if (this.parameters) {
         for (let i = 0; i < size; i++) {
           stringParams += `:${i},`;
