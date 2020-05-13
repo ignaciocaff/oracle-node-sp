@@ -1,7 +1,6 @@
 // tslint:disable-next-line: no-var-requires
 const oracledb = require('oracledb');
 const numRows = 100000;
-
 export class StoreProcedureDb {
   public name: string;
   public parameters: any[];
@@ -17,33 +16,35 @@ export class StoreProcedureDb {
     try {
       connection = await oracledb.getConnection();
       let stringParams: string = '';
-      let valueParams: any[] = [];
-      let size = this.parameters ? this.parameters.length || 0 : 0;
+      const valueParams: { [k: string]: any } = {};
+      const size = this.parameters ? this.parameters.length || 0 : 0;
       if (this.parameters) {
         for (let i = 0; i < size; i++) {
           stringParams += `:${i},`;
-          valueParams[i] = { [i] : this.parameters[i] };
+          valueParams[i] = { val: this.parameters[i] };
         }
       }
-      valueParams[size] = { [size]: { type: oracledb.CURSOR, dir: oracledb.BIND_OUT } };
+      valueParams['cursor'] = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
       const result = await connection.execute(
         `BEGIN
                ${this.name}(${stringParams}:cursor);
                END;`,
         valueParams,
       );
-
       const resultSet = result.outBinds.cursor;
       let rows;
       rows = await resultSet.getRows(numRows);
       await resultSet.close();
       return rows;
     } catch (err) {
+      console.error(err);
     } finally {
       if (connection) {
         try {
           await connection.close();
-        } catch (err) {}
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
   }
