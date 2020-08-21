@@ -27,7 +27,7 @@ export class StoreProcedureDb {
       valueParams['cursor'] = { type: oracledb.CURSOR, dir: oracledb.BIND_OUT };
       const result = await connection.execute(
         `BEGIN
-               ${this.name}(${stringParams}:cursor);
+               ${this.name}(:cursor${stringParams});
                END;`,
         valueParams,
       );
