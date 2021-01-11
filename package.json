@@ -1,6 +1,6 @@
 {
   "name": "oracle-sp-types",
-  "version": "1.4.1",
+  "version": "1.5.1",
   "description": "Test",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,6 +25,8 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@types/node": "^13.13.4"
+    "@types/node": "^13.13.4",
+    "oracledb": "^5.1.0",
+    "winston": "^3.3.3"
   }
 }
