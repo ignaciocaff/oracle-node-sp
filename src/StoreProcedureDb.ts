@@ -13,10 +13,17 @@ export class StoreProcedureDb {
 
   public constructor(name: string, parameters?: any[], autoCommit?: boolean, isPreviousDependent?: boolean, isLast?: boolean) {
     this.name = name;
-    this.parameters = parameters;
     this.autoCommit = autoCommit;
     this.isPreviousDependent = isPreviousDependent;
     this.isLast = isLast;
+    if (parameters && parameters.length) {
+      for (let i = 0; i <= parameters.length - 1; i++) {
+        if (typeof parameters[i] === 'string') {
+          parameters[i] = parameters[i].toUpperCase();
+        }
+      }
+    }
+    this.parameters = parameters;
   }
 
   public async executeSp(): Promise<any> {
