@@ -1,6 +1,6 @@
 {
   "name": "oracle-sp-types",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Execute store procedures and transactions in oracle db with nodejs",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

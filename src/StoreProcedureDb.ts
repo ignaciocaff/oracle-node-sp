@@ -62,12 +62,19 @@ export class StoreProcedureDb {
       }
       return rows;
     } catch (err) {
+      if (err && err.includes('NJS-040')) {
+        const ping = connection.ping();
+        logger.error('Existe conexión con la BD: ' + ping);
+      }
       logger.error(err);
+      return undefined;
     } finally {
       if (connection) {
         try {
           await connection.close();
+          logger.error('Cerro la sesión correctamente..')
         } catch (err) {
+          logger.error('Intentando cerrar la conexión falló..')
           logger.error(err);
         }
       }
@@ -105,8 +112,12 @@ export class StoreProcedureDb {
       await resultSet.close();
       return rows;
     } catch (err) {
+      if (err && err.includes('NJS-040')) {
+        const ping = connection.ping();
+        logger.error('Existe conexión con la BD: ' + ping);
+      }
       logger.error(err);
-      throw Error(err);
+      return undefined;
     }
   }
 }
